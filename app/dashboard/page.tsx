@@ -100,6 +100,15 @@ export default function DashboardPage() {
             <Link href="/" className="flex items-center space-x-2">
               <Leaf className="h-8 w-8 text-green-600" />
               <span className="text-2xl font-bold text-green-800">CarbonIQ</span>
+                  {farm.verification_status === 'rejected' && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <div className="text-sm font-medium text-red-800 mb-2">Verification Failed</div>
+                      <div className="text-xs text-red-700">
+                        Please review your submission and try again with updated information.
+                      </div>
+                    </div>
+                  )}
+                  
             </Link>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">

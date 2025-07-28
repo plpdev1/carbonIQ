@@ -133,14 +133,15 @@ export default function FarmMap({ onLocationUpdate }: FarmMapProps) {
 
   if (!isClient) {
     return (
-      <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center">
+      <div className="h-96 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-300">
         <p className="text-gray-600">Loading map...</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-96 rounded-lg overflow-hidden border border-gray-300">
+    <div className="w-full space-y-4">
+      <div className="h-96 rounded-lg overflow-hidden border border-gray-300 relative z-10">
       <MapContainer
         center={[0.0236, 37.9062]} // Kenya coordinates as default
         zoom={6}
@@ -152,6 +153,7 @@ export default function FarmMap({ onLocationUpdate }: FarmMapProps) {
         />
         <MapClickHandler onLocationUpdate={onLocationUpdate} />
       </MapContainer>
+      </div>
     </div>
   );
 }

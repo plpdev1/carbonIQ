@@ -88,15 +88,56 @@ export default function AddFarmPage() {
     // Simulate AI verification process
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Mock carbon credit calculation based on land size and practices
-    const baseCredits = farmData.land_size * 0.5; // Base 0.5 tons per hectare
+    // Enhanced AI verification with rejection logic
+    const rejectionReasons = [];
+    
+    // Check land size requirements
+    if (farmData.land_size < 0.5) {
+      rejectionReasons.push("Land size too small (minimum 0.5 hectares required)");
+    }
+    
+    // Check farming practices
+    if (farmData.farming_practices.length < 2) {
+      rejectionReasons.push("Insufficient sustainable farming practices (minimum 2 required)");
+    }
+    
+    // Check crop types for carbon sequestration potential
+    const lowCarbonCrops = ['Cotton', 'Tobacco'];
+    const hasLowCarbonCrops = farmData.crop_types.some((crop: string) => lowCarbonCrops.includes(crop));
+    if (hasLowCarbonCrops && farmData.crop_types.length === 1) {
+      rejectionReasons.push("Selected crops have low carbon sequestration potential");
+    }
+    
+    // Check coordinates validity
+    if (!farmData.coordinates || farmData.coordinates[0] === 0 || farmData.coordinates[1] === 0) {
+      rejectionReasons.push("Invalid or missing GPS coordinates");
+    }
+    
+    // Random rejection for demonstration (10% chance)
+    if (Math.random() < 0.1) {
+      rejectionReasons.push("Satellite imagery analysis shows inconsistent land use patterns");
+    }
+    
+    // If there are rejection reasons, return rejected status
+    if (rejectionReasons.length > 0) {
+      return {
+        carbon_credits: null,
+        confidence_score: null,
+        verification_status: 'rejected',
+        rejection_reasons: rejectionReasons
+      };
+    }
+    
+    // Calculate carbon credits for approved farms
+    const baseCredits = farmData.land_size * 0.5;
     const practiceMultiplier = 1 + (farmData.farming_practices.length * 0.1);
     const carbonCredits = baseCredits * practiceMultiplier;
     
     return {
       carbon_credits: Math.round(carbonCredits * 10) / 10,
       confidence_score: 0.85 + Math.random() * 0.1, // Random confidence between 85-95%
-      verification_status: 'verified'
+      verification_status: 'verified',
+      rejection_reasons: null
     };
   };
 
@@ -142,7 +183,11 @@ export default function AddFarmPage() {
 
       if (updateError) throw updateError;
 
-      toast.success('Farm verified successfully!', { id: 'verification' });
+      if (verificationResult.verification_status === 'verified') {
+        toast.success('Farm verified successfully!', { id: 'verification' });
+      } else {
+        toast.error(`Verification failed: ${verificationResult.rejection_reasons?.join(', ')}`, { id: 'verification' });
+      }
       
       setTimeout(() => {
         router.push('/dashboard');
@@ -160,7 +205,7 @@ export default function AddFarmPage() {
       case 1:
         return farmName && landSize && selectedCrops.length > 0;
       case 2:
-        return coordinates && boundaryData;
+        return coordinates !== null; // Only require coordinates, boundary is optional
       case 3:
         return selectedPractices.length > 0 && plantingDate;
       default:

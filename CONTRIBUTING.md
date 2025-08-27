@@ -32,7 +32,7 @@ CarbonIQ aims to democratize carbon credit verification for smallholder farmers 
 1. **Fork the repository**
 2. **Clone your fork**:
    ```bash
-   git clone https://github.com/your-username/carboniq.git
+   git clonne https://github.com/plpdev1/carbonIQ.git
    cd carboniq
    ```
 3. **Install dependencies**:
